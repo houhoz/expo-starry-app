@@ -5,3 +5,6 @@
 http://localhost:8081/_sitemap
 
 ```
+web 发布
+
+https://docs.expo.dev/distribution/publishing-websites/
