@@ -1,36 +1,44 @@
-import { StyleSheet } from 'react-native';
-import { Link } from 'expo-router';
-import EditScreenInfo from '../../components/EditScreenInfo';
-import { Text, View } from '../../components/Themed';
+import {
+  StyleSheet,
+  FlatList,
+  ActivityIndicator,
+} from 'react-native';
+import { useEffect, useState } from 'react';
+import ApodListItem from '@/components/ApodListItem';
+import FullScreenImage from '@/components/FullScreenImage';
+import { fetchApods, Apod } from '@/api';
 
-export default function TabOneScreen() {
+export default function Page() {
+  const [apods, setApods] = useState<Apod[]>([]);
+  const [activePicture, setActivePicture] = useState<string | null>(
+    null
+  );
+
+  useEffect(() => {
+    fetchApods().then(setApods);
+  }, []);
+
+  if (!apods) {
+    return <ActivityIndicator />;
+  }
+
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Tab One</Text>
-      <Link href={'/details'}>details</Link>
-      <View
-        style={styles.separator}
-        lightColor="#eee"
-        darkColor="rgba(255,255,255,0.1)"
+    <>
+      <FlatList
+        data={apods}
+        renderItem={({ item }) => (
+          <ApodListItem
+            apod={item}
+            onImagePress={() => setActivePicture(item.url)}
+          />
+        )}
       />
-      <EditScreenInfo path="app/(tabs)/index.tsx" />
-    </View>
+      <FullScreenImage
+        url={activePicture}
+        onClose={() => setActivePicture(null)}
+      />
+    </>
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  title: {
-    fontSize: 20,
-    fontWeight: 'bold',
-  },
-  separator: {
-    marginVertical: 30,
-    height: 1,
-    width: '80%',
-  },
-});
+const styles = StyleSheet.create({});
